@@ -215,6 +215,7 @@ function render() {
     `${Math.floor(remaining / 60)} minutes ${remaining % 60} seconds`,
   );
   progressRing.style.strokeDashoffset = `${circumference * (1 - remaining / duration)}`;
+  if (intervalId !== null) document.title = `${time} — Still`;
 }
 
 function setRunning(running) {
@@ -379,6 +380,14 @@ clearHistoryButton.addEventListener("click", () => {
 });
 
 themeToggle.addEventListener("click", toggleTheme);
+
+document.addEventListener("keydown", (event) => {
+  if (event.code !== "Space" || event.repeat || customDialog.open) return;
+  const target = event.target;
+  if (target instanceof Element && target.closest("button, a, input, textarea, select, dialog")) return;
+  event.preventDefault();
+  startButton.click();
+});
 
 window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", (event) => {
   let stored = null;

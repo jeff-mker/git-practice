@@ -13,13 +13,24 @@ const customForm = document.querySelector("#custom-form");
 const customMinutesInput = document.querySelector("#custom-minutes");
 const closeDialogButton = document.querySelector("#close-dialog");
 const toast = document.querySelector("#toast");
+const todayCount = document.querySelector("#today-count");
+const clearHistoryButton = document.querySelector("#clear-history");
+const historyList = document.querySelector("#history-list");
+const historyEmpty = document.querySelector("#history-empty");
+const statSessions = document.querySelector("#stat-sessions");
+const statMinutes = document.querySelector("#stat-minutes");
+const statStreak = document.querySelector("#stat-streak");
 
 const circumference = 2 * Math.PI * 137;
+const historyKey = "still.focus-history.v1";
+const historyLimit = 60;
 let duration = 25 * 60;
 let remaining = duration;
 let intervalId = null;
 let endTime = null;
 let toastTimeoutId = null;
+let history = loadHistory();
+let sessionLogged = false;
 
 progressRing.style.strokeDasharray = `${circumference}`;
 progressRing.style.strokeDashoffset = "0";
@@ -28,6 +39,143 @@ function formatTime(seconds) {
   const minutes = Math.floor(seconds / 60);
   const remainder = seconds % 60;
   return `${String(minutes).padStart(2, "0")}:${String(remainder).padStart(2, "0")}`;
+}
+
+function dayKey(date) {
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join("-");
+}
+
+function formatDateTime(date) {
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  const time = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+  if (dayKey(date) === dayKey(today)) return `Today, ${time}`;
+  if (dayKey(date) === dayKey(yesterday)) return `Yesterday, ${time}`;
+  return `${date.toLocaleDateString([], { month: "short", day: "numeric" })}, ${time}`;
+}
+
+function computeStreak(entries) {
+  const activeDays = new Set(entries.map((entry) => dayKey(new Date(entry.finishedAt))));
+  const cursor = new Date();
+  if (!activeDays.has(dayKey(cursor))) cursor.setDate(cursor.getDate() - 1);
+
+  let streak = 0;
+  while (activeDays.has(dayKey(cursor))) {
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return streak;
+}
+
+function loadHistory() {
+  try {
+    const stored = JSON.parse(window.localStorage.getItem(historyKey));
+    if (!Array.isArray(stored)) return [];
+    return stored.filter(
+      (entry) =>
+        entry &&
+        Number.isFinite(entry.minutes) &&
+        Number.isFinite(entry.elapsedSeconds) &&
+        Number.isFinite(new Date(entry.finishedAt).getTime()),
+    );
+  } catch {
+    return [];
+  }
+}
+
+function saveHistory() {
+  try {
+    window.localStorage.setItem(historyKey, JSON.stringify(history));
+  } catch {
+    /* storage unavailable — history stays in memory for this session */
+  }
+}
+
+function createHistoryItem(entry) {
+  const item = document.createElement("li");
+  item.className = `history-item${entry.completed ? " is-complete" : ""}`;
+
+  const marker = document.createElement("span");
+  marker.className = "history-marker";
+  marker.setAttribute("aria-hidden", "true");
+
+  const details = document.createElement("div");
+  details.className = "history-details";
+
+  const title = document.createElement("span");
+  title.className = "history-title";
+  title.textContent = `${entry.minutes} min focus`;
+
+  const meta = document.createElement("span");
+  meta.className = "history-meta";
+  const minutesFocused = Math.max(1, Math.round(entry.elapsedSeconds / 60));
+  meta.textContent = `${formatDateTime(new Date(entry.finishedAt))} · ${minutesFocused} min focused`;
+
+  details.append(title, meta);
+
+  const badge = document.createElement("span");
+  badge.className = "history-badge";
+  badge.textContent = entry.completed ? "DONE" : "STOPPED";
+
+  item.append(marker, details, badge);
+  return item;
+}
+
+function renderHistory() {
+  const today = dayKey(new Date());
+  const sorted = [...history].sort(
+    (a, b) => new Date(b.finishedAt) - new Date(a.finishedAt),
+  );
+
+  historyList.replaceChildren(...sorted.slice(0, historyLimit).map(createHistoryItem));
+  historyEmpty.hidden = history.length > 0;
+  clearHistoryButton.disabled = history.length === 0;
+
+  const focusedSeconds = history.reduce((sum, entry) => sum + entry.elapsedSeconds, 0);
+  const completedToday = history.filter(
+    (entry) => entry.completed && dayKey(new Date(entry.finishedAt)) === today,
+  ).length;
+
+  statSessions.textContent = String(history.length);
+  statMinutes.textContent = String(Math.round(focusedSeconds / 60));
+  statStreak.textContent = String(computeStreak(history));
+  todayCount.textContent = String(completedToday).padStart(2, "0");
+}
+
+function addHistoryEntry(completed) {
+  const elapsedSeconds = Math.min(duration, Math.max(0, duration - remaining));
+  if (!completed && elapsedSeconds < 60) return;
+
+  history = [
+    {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      minutes: Math.round(duration / 60),
+      elapsedSeconds,
+      completed,
+      finishedAt: new Date().toISOString(),
+    },
+    ...history,
+  ].slice(0, historyLimit);
+
+  saveHistory();
+  renderHistory();
+}
+
+function beginSession() {
+  sessionLogged = false;
+}
+
+function endSession(completed) {
+  if (sessionLogged) return;
+  sessionLogged = true;
+  addHistoryEntry(completed);
 }
 
 function render() {
@@ -63,6 +211,7 @@ function stopTimer() {
 function finishTimer() {
   stopTimer();
   remaining = 0;
+  endSession(true);
   render();
   timerLabel.textContent = "SESSION COMPLETE";
   timerSubtitle.textContent = "Beautifully done. Take a little pause.";
@@ -85,6 +234,7 @@ function startTimer() {
     render();
   }
 
+  beginSession();
   timerLabel.textContent = "YOU'RE IN THE FLOW";
   timerSubtitle.textContent = "One thing at a time.";
   endTime = Date.now() + remaining * 1000;
@@ -104,6 +254,7 @@ function pauseTimer() {
 }
 
 function resetTimer() {
+  endSession(false);
   stopTimer();
   remaining = duration;
   timerLabel.textContent = "READY WHEN YOU ARE";
@@ -113,6 +264,7 @@ function resetTimer() {
 }
 
 function selectDuration(minutes) {
+  endSession(false);
   duration = minutes * 60;
   remaining = duration;
   stopTimer();
@@ -189,4 +341,13 @@ customForm.addEventListener("submit", (event) => {
 
 customMinutesInput.addEventListener("input", () => customMinutesInput.setCustomValidity(""));
 
+clearHistoryButton.addEventListener("click", () => {
+  if (history.length === 0) return;
+  history = [];
+  saveHistory();
+  renderHistory();
+  showToast("History cleared.");
+});
+
+renderHistory();
 render();

@@ -30,9 +30,9 @@
             <p class="eyebrow">MAKE THIS MOMENT COUNT</p>
             <h1 id="timer-heading">Find your focus.</h1>
           </div>
-          <div class="session-count" aria-label="Focus session">
-            <span class="session-count-label">SESSION</span>
-            <span class="session-count-value">01</span>
+          <div class="session-count" aria-label="Sessions completed today">
+            <span class="session-count-label">TODAY</span>
+            <span class="session-count-value" id="today-count">00</span>
           </div>
         </div>
 
@@ -80,6 +80,36 @@
           <button class="preset-button" type="button" data-minutes="45">45 <span>min</span></button>
           <button class="preset-button" id="custom-button" type="button" aria-pressed="false">Custom <span>＋</span></button>
         </div>
+      </section>
+
+      <section class="history-card" aria-labelledby="history-heading">
+        <div class="history-heading">
+          <div>
+            <p class="eyebrow">YOUR TRACK RECORD</p>
+            <h2 id="history-heading">Focus history</h2>
+          </div>
+          <button class="clear-button" id="clear-history" type="button">Clear</button>
+        </div>
+
+        <div class="history-stats">
+          <div class="stat">
+            <span class="stat-value" id="stat-sessions">0</span>
+            <span class="stat-label">SESSIONS</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="stat-minutes">0</span>
+            <span class="stat-label">FOCUS MINUTES</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="stat-streak">0</span>
+            <span class="stat-label">DAY STREAK</span>
+          </div>
+        </div>
+
+        <ul class="history-list" id="history-list"></ul>
+        <p class="history-empty" id="history-empty">
+          No sessions logged yet. Finished timers will appear here.
+        </p>
       </section>
 
       <footer class="footer">

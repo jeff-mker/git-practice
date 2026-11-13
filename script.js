@@ -20,9 +20,13 @@ const historyEmpty = document.querySelector("#history-empty");
 const statSessions = document.querySelector("#stat-sessions");
 const statMinutes = document.querySelector("#stat-minutes");
 const statStreak = document.querySelector("#stat-streak");
+const themeToggle = document.querySelector("#theme-toggle");
+const themeMeta = document.querySelector('meta[name="theme-color"]');
 
 const circumference = 2 * Math.PI * 137;
 const historyKey = "still.focus-history.v1";
+const themeKey = "still.theme";
+const themeColors = { dark: "#101114", light: "#f4f3ee" };
 const historyLimit = 60;
 let duration = 25 * 60;
 let remaining = duration;
@@ -172,6 +176,31 @@ function beginSession() {
   sessionLogged = false;
 }
 
+function applyTheme(theme) {
+  const next = theme === "light" ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
+  themeMeta.setAttribute("content", themeColors[next]);
+  themeToggle.setAttribute(
+    "aria-label",
+    next === "dark" ? "Switch to light mode" : "Switch to dark mode",
+  );
+  themeToggle.setAttribute("title", next === "dark" ? "Light mode" : "Dark mode");
+}
+
+function saveTheme(theme) {
+  try {
+    window.localStorage.setItem(themeKey, theme);
+  } catch {
+    /* storage unavailable — theme applies to this session only */
+  }
+}
+
+function toggleTheme() {
+  const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+  applyTheme(next);
+  saveTheme(next);
+  showToast(next === "light" ? "Light mode on." : "Dark mode on.");
+}
 function endSession(completed) {
   if (sessionLogged) return;
   sessionLogged = true;
@@ -349,5 +378,18 @@ clearHistoryButton.addEventListener("click", () => {
   showToast("History cleared.");
 });
 
+themeToggle.addEventListener("click", toggleTheme);
+
+window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", (event) => {
+  let stored = null;
+  try {
+    stored = window.localStorage.getItem(themeKey);
+  } catch {
+    /* storage unavailable */
+  }
+  if (stored !== "light" && stored !== "dark") applyTheme(event.matches ? "light" : "dark");
+});
+
 renderHistory();
+applyTheme(document.documentElement.dataset.theme);
 render();

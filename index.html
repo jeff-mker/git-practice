@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#101114" />
     <title>Still — Focus Timer</title>
+    <script>
+      (() => {
+        const key = "still.theme";
+        let theme = null;
+        try {
+          theme = localStorage.getItem(key);
+        } catch {
+          /* storage unavailable */
+        }
+        if (theme !== "light" && theme !== "dark") {
+          theme = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        }
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -21,7 +36,18 @@
           <span class="brand-mark" aria-hidden="true"><span></span></span>
           <span>still<span class="brand-period">.</span></span>
         </a>
-        <span class="topbar-note"><span class="status-dot"></span> YOUR SPACE TO FOCUS</span>
+        <div class="topbar-actions">
+          <span class="topbar-note"><span class="status-dot"></span> YOUR SPACE TO FOCUS</span>
+          <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to light mode" title="Switch theme">
+            <svg class="theme-icon icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="4.2"></circle>
+              <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"></path>
+            </svg>
+            <svg class="theme-icon icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20.4 14.6A8.6 8.6 0 0 1 9.4 3.6a8.6 8.6 0 1 0 11 11Z"></path>
+            </svg>
+          </button>
+        </div>
       </header>
 
       <section class="timer-card" aria-labelledby="timer-heading">

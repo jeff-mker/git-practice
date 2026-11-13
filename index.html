@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101114" />
+    <title>Still — Focus Timer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Still timer home">
+          <span class="brand-mark" aria-hidden="true"><span></span></span>
+          <span>still<span class="brand-period">.</span></span>
+        </a>
+        <span class="topbar-note"><span class="status-dot"></span> YOUR SPACE TO FOCUS</span>
+      </header>
+
+      <section class="timer-card" aria-labelledby="timer-heading">
+        <div class="card-heading">
+          <div>
+            <p class="eyebrow">MAKE THIS MOMENT COUNT</p>
+            <h1 id="timer-heading">Find your focus.</h1>
+          </div>
+          <div class="session-count" aria-label="Focus session">
+            <span class="session-count-label">SESSION</span>
+            <span class="session-count-value">01</span>
+          </div>
+        </div>
+
+        <div class="timer-display" aria-live="off">
+          <svg class="progress-ring" viewBox="0 0 300 300" aria-hidden="true">
+            <circle class="progress-track" cx="150" cy="150" r="137"></circle>
+            <circle class="progress-value" cx="150" cy="150" r="137"></circle>
+          </svg>
+          <div class="time-content">
+            <span class="timer-label" id="timer-label">READY WHEN YOU ARE</span>
+            <time class="time" id="time" aria-label="25 minutes 00 seconds">25:00</time>
+            <span class="timer-subtitle" id="timer-subtitle">A little space, just for you.</span>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="control-button secondary" id="reset-button" type="button" aria-label="Reset timer">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4.5 8.5A8 8 0 1 1 4 14"></path>
+              <path d="M4.5 4.5v4h4"></path>
+            </svg>
+          </button>
+          <button class="control-button primary" id="start-button" type="button">
+            <svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m9 6 10 6-10 6z"></path>
+            </svg>
+            <svg class="pause-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 6h3v12H8zM15 6h3v12h-3z"></path>
+            </svg>
+            <span id="start-button-label">Start focus</span>
+          </button>
+          <button class="control-button secondary" id="skip-button" type="button" aria-label="Skip timer">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 5v14l11-7zM19 5v14"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="presets" role="group" aria-label="Timer duration">
+          <span class="presets-label">DURATION</span>
+          <button class="preset-button" type="button" data-minutes="15">15 <span>min</span></button>
+          <button class="preset-button selected" type="button" data-minutes="25" aria-pressed="true">25 <span>min</span></button>
+          <button class="preset-button" type="button" data-minutes="45">45 <span>min</span></button>
+          <button class="preset-button" id="custom-button" type="button" aria-pressed="false">Custom <span>＋</span></button>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span>ONE THING AT A TIME.</span>
+        <span class="footer-right">TAKE A BREATH <span aria-hidden="true">✳</span></span>
+      </footer>
+    </main>
+
+    <dialog class="custom-dialog" id="custom-dialog" aria-labelledby="custom-title">
+      <form class="custom-form" id="custom-form">
+        <button class="dialog-close" id="close-dialog" type="button" aria-label="Close">×</button>
+        <p class="eyebrow">SET YOUR OWN PACE</p>
+        <h2 id="custom-title">Custom timer</h2>
+        <label for="custom-minutes">How long do you need?</label>
+        <div class="input-wrap">
+          <input id="custom-minutes" name="minutes" type="number" min="1" max="180" value="30" required />
+          <span>minutes</span>
+        </div>
+        <button class="control-button primary dialog-submit" type="submit">Set timer</button>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>

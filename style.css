@@ -9,9 +9,10 @@
   --accent-hover: #d0f795;
   --accent-contrast: #1a2012;
   --accent-text: #a8c880;
+  --accent-gradient: linear-gradient(135deg, #d8ff9a, #9fe05a 55%, #6fae35);
 
   --bg: #101114;
-  --bg-glow: rgba(68, 78, 57, 0.13);
+  --bg-glow: rgba(104, 168, 58, 0.24);
   --text: #f3f1ec;
   --text-secondary: #c7c7c4;
   --text-tertiary: #a7a8aa;
@@ -37,14 +38,15 @@
   --track: #383a3c;
   --marker-dot: #5c5f63;
   --card-border: #292b2e;
-  --card-bg: linear-gradient(145deg, rgba(28, 29, 32, 0.98), rgba(22, 23, 26, 0.98));
-  --card-shadow: 0 28px 90px rgba(0, 0, 0, 0.23), inset 0 1px 0 rgba(255, 255, 255, 0.025);
-  --history-bg: linear-gradient(145deg, rgba(26, 27, 30, 0.97), rgba(21, 22, 25, 0.97));
+  --card-bg: linear-gradient(145deg, rgba(32, 38, 28, 0.98), rgba(19, 21, 22, 0.98));
+  --card-shadow: 0 28px 90px rgba(0, 0, 0, 0.23), inset 0 1px 0 rgba(194, 240, 120, 0.06);
+  --history-bg: linear-gradient(145deg, rgba(29, 34, 26, 0.97), rgba(19, 20, 22, 0.97));
   --history-shadow: 0 20px 60px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.02);
   --dialog-bg: #1b1c1f;
   --dialog-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
   --backdrop: rgba(5, 6, 8, 0.72);
-  --body-bg: radial-gradient(ellipse at 50% 46%, var(--bg-glow), transparent 39%), var(--bg);
+  --body-bg: radial-gradient(ellipse at 50% 44%, var(--bg-glow), transparent 46%),
+    linear-gradient(165deg, #151b11 0%, var(--bg) 46%, #0b0d09 100%);
 
   background: var(--bg);
   color: var(--text);
@@ -58,9 +60,10 @@
   --accent-hover: #4d7713;
   --accent-contrast: #ffffff;
   --accent-text: #4d7713;
+  --accent-gradient: linear-gradient(135deg, #8fc93a, #6aa81f 55%, #4d7713);
 
   --bg: #f4f3ee;
-  --bg-glow: rgba(120, 170, 60, 0.16);
+  --bg-glow: rgba(120, 170, 60, 0.26);
   --text: #1b1c1f;
   --text-secondary: #45474c;
   --text-tertiary: #5c5f65;
@@ -86,13 +89,15 @@
   --track: #dedcd4;
   --marker-dot: #a9a7a0;
   --card-border: #e2e0d8;
-  --card-bg: linear-gradient(145deg, #ffffff, #fbfaf6);
+  --card-bg: linear-gradient(145deg, #ffffff, #f3f8e9);
   --card-shadow: 0 24px 70px rgba(40, 42, 35, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.7);
-  --history-bg: linear-gradient(145deg, #ffffff, #fbfaf6);
+  --history-bg: linear-gradient(145deg, #ffffff, #f1f6e6);
   --history-shadow: 0 18px 50px rgba(40, 42, 35, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.7);
   --dialog-bg: #ffffff;
   --dialog-shadow: 0 24px 70px rgba(30, 32, 26, 0.22);
   --backdrop: rgba(38, 40, 34, 0.36);
+  --body-bg: radial-gradient(ellipse at 50% 44%, var(--bg-glow), transparent 50%),
+    linear-gradient(165deg, #eef6de 0%, var(--bg) 48%, #e6efd8 100%);
 }
 
 * {
@@ -411,14 +416,19 @@ input:focus-visible {
   min-width: 164px;
   gap: 10px;
   padding: 0 22px;
-  background: var(--accent);
+  background: var(--accent-gradient);
+  box-shadow: 0 6px 18px rgba(var(--accent-rgb), 0.22);
   color: var(--accent-contrast);
   font-size: 13px;
   font-weight: 700;
 }
 
 .control-button.primary:hover {
-  background: var(--accent-hover);
+  background: linear-gradient(135deg, #e2ffab, #a9ea66 55%, #79bb3d);
+}
+
+:root[data-theme="light"] .control-button.primary:hover {
+  background: linear-gradient(135deg, #7fbc2e, #5e8f1b 55%, #446a12);
 }
 
 .control-button.primary svg {
@@ -490,7 +500,7 @@ input:focus-visible {
 
 .preset-button.selected {
   border-color: rgba(var(--accent-rgb), 0.3);
-  background: rgba(var(--accent-rgb), 0.12);
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.22), rgba(var(--accent-rgb), 0.08));
   color: var(--accent);
 }
 
